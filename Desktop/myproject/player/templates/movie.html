@@ -1,0 +1,12 @@
+<h1>{{movies.name}}</h1>
+    <ul>
+    {% for m in movies_list %}
+        <li><a href="{% url 'player:movie' player.id %}" >{{ movies.name }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No movies are available.</p>
+{%endif %}
+
+
+

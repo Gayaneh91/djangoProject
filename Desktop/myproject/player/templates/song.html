@@ -1,0 +1,10 @@
+<h1>{{songs.name}}</h1>
+
+    <ul>
+    {% for s in songs_list %}
+        <li><a href="{% url 'player:song' player.id %}" >{{ songs.name }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No songs are available.</p>
+{%endif %}
