@@ -1,39 +1,55 @@
 import requests
-from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect, Http404
 from bs4 import BeautifulSoup
-from django.core.exceptions import ObjectDoesNotExist
-from .models import Kino
-
-
-def top_list(request):
-    return render(request, 'top_list.html')
+from django.shortcuts import render
+from django.http import HttpResponse
+from .models import Film
+import datetime
+from datetime import date
+import matplotlib.pyplot as plt
+import pandas as pd
 # Create your views here.
 
-def scrapping(request):
-    URL = 'https://www.kinopoisk.ru/lists/movies/top250/'
-
-    r = requests.get(URL)
-    # print(r.text)
-    soup = BeautifulSoup(r.content, "html.parser")
-    # print(soup)
-
-    results = soup.find('div', class_='styles_root__ti07r')
-    films_list = 'https://www.kinopoisk.ru/lists/movies/top250' + results.find('a', class_='base-movie-main-info_link__YwtP1').get('href')
-    # print(films_list)
-
-    for fl in films_list[1:26]:
-
-        divs = fl.find_all('div')
-        for i in range(len(divs)):
-            try:
-                k = k.original_name=divs[2].text
-            except:
-                k = '-'
-
-        return HttpResponse()
+def welcome(request):
+    return render(request, 'Welcome.html')
 
 
+def scrap(request):
+
+    url = 'https://www.imdb.com/chart/top/'
+    page = requests.get(url)
+    soup = BeautifulSoup(page.content, 'html.parser')
+    res = soup.find(class_='titleColumn')
+    film_list = res.find_all('tr')
+
+    for film in film_list:
+
+        tds = film.find_all('td')
+        f = Film(name=tds.find('td', class_='titleColumn').find('a').text,
+                 year=tds.find('td', class_='titleColumn').select('td span')[0].text[1:-1],
+                 rate=tds.find('td', class_='imdbRating').text.strip(),
+                 users=tds.find('td', class_='imdbRating').find('strong').get('title').split(' ')[3].replace(',', ''))
+        f.save()
+        print(f)
+
+    return render(request, 'scrap.html')
 
 
+def film_list(request):
+    allfilms = Film.object.all().values()
+    return render(request, 'scrap.html', {'allfilms':allfilms})
+
+def graphic(request):
+
+    films = Film.objects.filter(rate=9)
+
+    x = []
+    y = []
+    for f in films:
+        x.append(f.name)
+        y.append(f.rate)
+
+    plt.scatter(x, y)
+    plt.savefig('static/film.svg')
+
+    return render(request, 'graphic.html')
 
