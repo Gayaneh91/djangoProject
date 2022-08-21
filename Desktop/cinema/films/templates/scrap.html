@@ -1,0 +1,14 @@
+<h1>Information about Top 250 films</h1>
+
+<table border="1">
+{% for film in allfilms %}
+<tr>
+    <td>{{film.name}}</td>
+    <td>{{film.year}}</td>
+    <td>{{film.rate}}</td>
+    <td>{{film.user}}</td>
+</tr>
+{% endfor %}
+</table>
+
+
