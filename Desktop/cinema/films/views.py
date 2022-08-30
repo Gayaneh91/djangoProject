@@ -4,12 +4,14 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from .models import Film
 import datetime
-from datetime import date
+from datetime import datetime
 import matplotlib.pyplot as plt
 import pandas as pd
 # Create your views here.
 
+
 def welcome(request):
+
     return render(request, 'Welcome.html')
 
 
@@ -29,7 +31,7 @@ def scrap(request):
                  rate=tds.find('td', class_='imdbRating').text.strip(),
                  users=tds.find('td', class_='imdbRating').find('strong').get('title').split(' ')[3].replace(',', ''))
         f.save()
-        # print(f)
+        print(f)
 
     return render(request, 'scrap.html')
 
@@ -49,8 +51,10 @@ def graphic(request):
         x.append(f.name)
         y.append(f.rate)
 
-    plt.scatter(x, y)
-    plt.savefig('static/film.svg')
+
+        plt.scatter(x, y)
+        plt.savefig('static/film.svg')
 
     return render(request, 'graphic.html')
+
 
