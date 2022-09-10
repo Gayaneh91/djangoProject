@@ -19,19 +19,19 @@ def scrap(request):
 
     url = 'https://www.imdb.com/chart/top/'
     page = requests.get(url)
-    soup = BeautifulSoup(page.content, 'html.parser')
+    soup = BeautifulSoup(page.content, 'lxml')
     res = soup.find(class_='titleColumn')
     film_list = res.find_all('tr')
 
     for film in film_list:
 
         tds = film.find_all('td')
-        f = Film(name=tds.find('td', class_='titleColumn').find('a').text,
-                 year=tds.find('td', class_='titleColumn').select('td span')[0].text[1:-1],
-                 rate=tds.find('td', class_='imdbRating').text.strip(),
-                 users=tds.find('td', class_='imdbRating').find('strong').get('title').split(' ')[3].replace(',', ''))
+        f = Film(name=film.find('a').text,
+                 year=film.select('td span')[0].text[1:-1],
+                 rate=soup.find('td', class_='imdbRating').text.strip(),
+                 number_of_users=soup.find('td', class_='imdbRating').find('strong').get('title').split(' ')[3].replace(',', ''))
         f.save()
-        print(f)
+        # print(f)
 
     return render(request, 'scrap.html')
 
@@ -52,8 +52,8 @@ def graphic(request):
         y.append(f.rate)
 
 
-        plt.scatter(x, y)
-        plt.savefig('static/film.svg')
+    plt.scatter(x, y)
+    plt.savefig('static/film.svg')
 
     return render(request, 'graphic.html')
 

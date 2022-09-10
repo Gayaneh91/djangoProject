@@ -39,8 +39,6 @@ def user_login(request):
             password = form.cleaned_data['password']
             user = authenticate(username=username, password=password)
             login(request, user)
-            member = AcUser(user=user)
-            member.save()
             return redirect('welcome')
 
     else:
